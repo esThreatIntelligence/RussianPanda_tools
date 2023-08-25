@@ -12,7 +12,8 @@ session.proxies = {
     'https': '198.49.68.80:80',
 }
 
-url = input("Please enter the URL to fetch config from (for example: http://URL/c2conf): ")
+base_url = input("Please enter the base URL (for example: http://URL/): ")
+url = base_url + "/c2conf"  
 
 try:
     response = session.get(url, timeout=10)  # Setting the timeout to 10 seconds
