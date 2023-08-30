@@ -15,6 +15,8 @@ sequence2 = b'\x69\x6F\x00\x78\x78\x78\x78\x78\x78\x78\x78\x78\x78\x78'
 pattern3 = b'\x6C\x69\x64\x3D\x25\x73\x26'
 version_pattern = re.compile(b'ver=([\d\.]+)')
 build_id_pattern = re.compile(b'\x00([a-zA-Z0-9\-_@]+?)\x00x+')
+# New pattern for capturing .io and .xyz domains
+domain_match_tld = re.compile(b'([a-zA-Z0-9\-_@]+\.(io|xyz))') # this can change
 
 file_path = input("Please enter the path to the LummaC2 payload: ")
 
@@ -38,59 +40,74 @@ def seek_and_extract(pattern, section):
         return matched_data
     return None
 
+domains = set()
+
 def extract_domains(matched_data):
+    global build_id_var
     domain_pattern = re.compile(b'\x00([a-zA-Z0-9.-]{5,})\x00.{1,30}\x00([a-zA-Z0-9.-]{5,})\x00')
     domain_match = domain_pattern.search(matched_data)
     if domain_match:
         domain1 = domain_match.group(1).decode('utf-8', errors='ignore')
         domain2 = domain_match.group(2).decode('utf-8', errors='ignore')
  
-    # Filter out between C2 and build_id
-    if '.' in domain1:
-        print(f"C2: {domain1}")
-    elif '--' in domain1 or '.' not in domain1:
-        print(f"Build ID: {domain1}")
+        # Filter out between C2 and build_id
+        if '.' in domain1 and domain1 not in domains:
+            print(f"C2: {domain1}")
+            domains.add(domain1)
+        elif '--' in domain1 or '.' not in domain1 and not build_id_var:
+            print(f"Build ID: {domain1}")
+            build_id_var = True
 
-    # Only print domain2 if it's different from domain1
-    if domain1 != domain2:
-        if '.' in domain2:
-            print(f"C2: {domain2}")
-        elif '--' in domain2 or '.' not in domain2:
-            print(f"Build ID: {domain2}")
+        # Only print domain2 if it's different from domain1 and not printed before
+        if domain1 != domain2:
+            if '.' in domain2 and domain2 not in domains:
+                print(f"C2: {domain2}")
+                domains.add(domain2)
+        elif '--' in domain1 or '.' not in domain1 and not build_id_var:
+            if not build_id_var:
+                print(f"Build ID: {domain1}")
+                build_id_var = True
 
+    
+    tld_match = domain_match_tld.search(matched_data)
+    if tld_match:
+        domain = tld_match.group(1).decode('utf-8', errors='ignore')
+        if domain not in domains:
+            print(f"C2: {domain}")
+            domains.add(domain)
+
+build_id_var = False
 matched_one = None
 matched_two = None
 matched_three = None
+build_id_1 = False  #  ensure Build ID is printed only once
 
 for section in pe.sections:
     if not matched_one:
         matched_one = seek_and_extract(pattern1, section)
         if matched_one:
-            #print("Matched data for pattern1:", matched_one)
-            
             build_match = build_id_pattern.search(matched_one)
-            if build_match:
+            if build_match and not build_id_var:
                 build = build_match.group(1).decode('utf-8', errors='ignore')
                 print(f"Build ID: {build}")
+                build_id_var = True
 
     if not matched_two:
         matched_two = seek_and_extract(pattern2, section)
         if matched_two:
-            #print("Matched data for pattern2:", matched_two)
             extract_domains(matched_two)
 
     if not matched_three:
         matched_three = seek_and_extract(pattern3, section)
         if matched_three:
-            #print("Matched data for pattern3:", matched_three)
-            
             match_within_pattern_3 = version_pattern.search(matched_three)
             if match_within_pattern_3:
                 extracted_string = match_within_pattern_3.group(1).decode('utf-8', errors='ignore')
                 print(f"Version: {extracted_string}")
 
     if matched_one and matched_two:
-        break 
+        break
+
 
 #if not matched_one:
 #    print("pattern1 not found") # pattern1
