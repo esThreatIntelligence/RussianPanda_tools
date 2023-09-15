@@ -86,8 +86,6 @@ def find_base64_pattern_in_pe(file_path):
         separated_urls = re.sub(r'(http:// | https://)', r' | \1', url)
         print(f"C2: {separated_urls.strip(' | ')}\n")
 
-
-
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python darkgate_config_extractor_2.py <path_to_file>")
