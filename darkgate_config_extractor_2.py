@@ -1,6 +1,7 @@
 # author: RussianPanda
 # reference: https://github.com/esThreatIntelligence/RussianPanda_tools/blob/main/darkgate_config_extractor.py
-# tested on sample: 786486d57e52d2c59f99f841989bfc9d
+# tested on samples: 786486d57e52d2c59f99f841989bfc9d
+# 853e53f0fd01e14e61498ffea94d70b0
 
 import pefile
 import re
