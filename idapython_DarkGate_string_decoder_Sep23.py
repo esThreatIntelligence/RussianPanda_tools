@@ -1,5 +1,6 @@
 # Author: RussianPanda
 # Tested on sample: 786486d57e52d2c59f99f841989bfc9d
+
 import idautils
 import idc
 import ida_bytes
@@ -24,7 +25,6 @@ def decode_custom_base64(encoded_bytes, char_map):
                 decoded_bytes.append((indices[3] & 0x3F) | ((indices[2] & 0x03) << 6))
 
     return decoded_bytes
-
 
 ea = 0x004572B0 #change this to the relevant address you have
 
