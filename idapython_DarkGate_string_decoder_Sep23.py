@@ -1,4 +1,5 @@
-
+# Author: RussianPanda
+# Tested on sample: 786486d57e52d2c59f99f841989bfc9d
 import idautils
 import idc
 import ida_bytes
