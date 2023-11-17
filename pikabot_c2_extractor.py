@@ -43,6 +43,38 @@ def rc4(key, data):
 
     return bytes(out)
 
+def aes_dec(enc_str):
+    enc_str_bytes = bytes.fromhex(enc_str)
+
+    # Extract the IV
+    iv_start = 3 + 16
+    iv = enc_str_bytes[iv_start:iv_start + 16]
+
+    # Extract Encrypted C2 (44 bytes after the IV)
+    encrypted_c2_start = iv_start + 16
+    encrypted_c2 = enc_str_bytes[encrypted_c2_start:encrypted_c2_start + 44]
+
+    # Extract the first 100 bytes of enc_str_bytes
+    aes_key = enc_str_bytes[3:95]
+
+    if iv in aes_key:
+        aes_key = aes_key.replace(iv, b'')
+    if encrypted_c2 in aes_key:
+        aes_key = aes_key.replace(encrypted_c2, b'')
+
+    try:
+        # Decrypt Encrypted C2 using AES
+        encrypted_c2_b64_dec = base64.b64decode(encrypted_c2)
+        cipher = AES.new(aes_key, AES.MODE_CBC, iv)
+        decrypted_c2 = cipher.decrypt(encrypted_c2_b64_dec)
+
+        # Extract readable characters
+        decrypted_c2 = decrypted_c2.decode('utf-8', errors='ignore')
+        filtered_c2 = ''.join(re.findall(r'[a-zA-Z0-9.:]+', decrypted_c2))
+        return filtered_c2
+    except Exception :
+        pass
+    
 def offset_to_virtual(pe, offset):
     for section in pe.sections:
         if section.PointerToRawData <= offset < section.PointerToRawData + section.SizeOfRawData:
@@ -127,36 +159,13 @@ if encrypted_data and rc4_key:
     decrypted_data = rc4(rc4_key, encrypted_data)
     decrypted_data = decrypted_data.replace(b'_', b'=')
 
-    # Extract the IV
-    iv_start = 3 + 16
-    iv = decrypted_data[iv_start:iv_start + 16]
+    split_data = decrypted_data.split(b'\x26') 
+    for i, data_part in enumerate(split_data, start=1):
+        enc_str = data_part.hex()
+        decrypted_value = aes_dec(enc_str)
+        if decrypted_value: 
+            print(f"C2: {decrypted_value}")
 
-    # Extract Encrypted C2 (44 bytes after the IV)
-    encrypted_c2_start = iv_start + 16
-    encrypted_c2 = decrypted_data[encrypted_c2_start:encrypted_c2_start + 44]
-
-    # Extract the first 100 bytes of decrypted_data
-    aes_key = decrypted_data[3:95]
-
-    # Check if iv and encrypted_c2 are present within the first 100 bytes and remove
-    if iv in aes_key:
-        aes_key = aes_key.replace(iv, b'')  
-    if encrypted_c2 in aes_key:
-        aes_key = aes_key.replace(encrypted_c2, b'') 
-
-    try:
-        encrypted_c2_b64_dec = base64.b64decode(encrypted_c2)
-        cipher = AES.new(aes_key, AES.MODE_CBC, iv)
-        decrypted_c2 = cipher.decrypt(encrypted_c2_b64_dec)
-
-    
-        decrypted_c2 = decrypted_c2.decode('utf-8', errors='ignore')
-        decrypted_c2 = ''.join(re.findall(r'[a-zA-Z0-9.:]+', decrypted_c2))
-        print("C2:", decrypted_c2)
-
-
-    except Exception as e:
-        print("Decryption Error:", e)
 
 if not rc4_key:
     print("RC4 key not found in any matches")
