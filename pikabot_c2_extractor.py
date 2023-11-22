@@ -95,7 +95,7 @@ def read_until_null(pe, file_offset):
 
 # YARA rules
 rule_data_one = 'rule data_one { strings: $s = {be ?? ?? ?? ?? 33 d2 f3 a5} condition: $s }'
-rule_data_two = 'rule data_two { strings: $a = {be ?? ?? ?? 00 8d bd ?? ?? ff ff f3 a5 be 2c} condition: $a }'
+rule_data_two = 'rule data_two { strings: $a = {be ?? ?? ?? 00 8d bd ?? ?? ff ff f3 a5 be} condition: $a }'
 
 rules = yara.compile(sources={
     'data_one': rule_data_one,
