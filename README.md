@@ -33,3 +33,12 @@ The C2 extractor was tested on the following samples:
 6831071b92befb0eeb599271100a68d8fcb0f7c145f8cd4964472c4df57645ab
 39d6f7865949ae7bb846f56bff4f62a96d7277d2872fec68c09e1227e6db9206
 7573d6d994bd946dcee13354a080c624e58a3aa2c6ac8ffd4a6104640047f519*
+
+#### Parallax RAT
+
+The configuration extractor was tested on the following samples:
+
+
+*80d53ed5f7e3da00fb8ad29dfee6d543c6999fe2ebc15edba549428bdbcb3e26
+fc559914b78caad5e44725689eb5d9c54321a14dff517fba5a55ecea89df967a
+5644ad897d506f759910ac6e2c611fb506000bbf4c9531f1930b12906ca2b216*
