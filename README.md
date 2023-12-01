@@ -42,3 +42,10 @@ The configuration extractor was tested on the following samples:
 *80d53ed5f7e3da00fb8ad29dfee6d543c6999fe2ebc15edba549428bdbcb3e26
 fc559914b78caad5e44725689eb5d9c54321a14dff517fba5a55ecea89df967a
 5644ad897d506f759910ac6e2c611fb506000bbf4c9531f1930b12906ca2b216*
+
+#### IcedID
+
+The string decryptor IDAPython script was tested on the following sample:
+
+
+*8da8913824dda580cd210f4326a69bca*
