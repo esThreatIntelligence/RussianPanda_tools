@@ -45,7 +45,7 @@ fc559914b78caad5e44725689eb5d9c54321a14dff517fba5a55ecea89df967a
 
 #### IcedID
 
-The string decryptor IDAPython script was tested on the following sample:
+The IDAPython string decryptor script was tested on the following sample:
 
 
 *8da8913824dda580cd210f4326a69bca*
