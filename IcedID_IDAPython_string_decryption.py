@@ -7,6 +7,13 @@ import idc
 import idaapi
 import ida_ua
 
+def extract_hex_string(address, size):
+    hex_string = ""
+    for i in range(size):
+        byte_value = idc.get_wide_byte(address + i)
+        hex_string += f"{byte_value:02X}"
+    return hex_string
+
 def extract_hex_string_until_double_null(address):
     hex_string = ""
     prev_byte = None
@@ -98,5 +105,5 @@ def main(target_address):
         
 
 if __name__ == "__main__":
-    target_address = 0x000000018000A3B4 # decryption address here
+    target_address = 0x000000018000A474 # decryption address here
     main(target_address)
